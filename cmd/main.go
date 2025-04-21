@@ -1,19 +1,17 @@
 package main
 
 import (
-    "github.com/gin-gonic/gin"
-  
-    "twitter/handlers"
-    
+	"log"
+	routes "twitter/server"
 )
 
 func main() {
-    router := gin.Default()
+	log.Println("Starting Twitter server...")
+	router := routes.NewRouter()
+	router.SetupRoutes()
 
-    router.POST("/create", handlers.CreateNote) 
-
-    router.Run(":8080") 
+	log.Println("Server listening on :8080")
+	if err := router.Run(":8080"); err != nil {
+		log.Fatalf("Failed to start server: %v", err)
+	}
 }
-
-
-//удаление структурку с конфигом, структуру  с роутом,где я буду указывать все ендпоинты

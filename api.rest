@@ -1,2 +1,0 @@
-### create any post 
-POST localhost:8080/api/v1/notes/create HTTP/1.1

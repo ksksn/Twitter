@@ -1,32 +1,49 @@
 package routes
 
-//import (
-   // "github.com/gin-gonic/gin"
-   // "twitter/handlers"
-//)
-/*
+import (
+	"twitter/handlers"
+	"twitter/middleware"
+
+	"github.com/gin-gonic/gin"
+)
+
 type Router struct {
-    engine *gin.Engine
+	engine *gin.Engine
 }
 
 func NewRouter() *Router {
-    return &Router{
-        engine: gin.Default(),
-    }
+	return &Router{
+		engine: gin.Default(),
+	}
 }
 
 func (r *Router) SetupRoutes() {
-        notes := r.engine.Group("/api/v1/notes")
-    {
-		notes.POST("", handlers.CreateNote) 
-  
-    }  
-	
+	// Публичные маршруты для аутентификации
+	auth := r.engine.Group("api/v1/auth")
+	{
+		auth.POST("register", handlers.Register)
+		auth.POST("login", handlers.Login)
+	}
 
+	// Защищенные маршруты для заметок
+	notes := r.engine.Group("api/v1/notes")
+	notes.Use(middleware.AuthMiddleware())
+	{
+		notes.POST("create", handlers.CreateNote)
+		notes.POST("like", handlers.LikeNote)
+		notes.POST("dislike", handlers.DislikeNote)
+		notes.DELETE("delete", handlers.DeleteNote)
+	}
 
+	// Защищенные маршруты для пользователей
+	users := r.engine.Group("api/v1/users")
+	users.Use(middleware.AuthMiddleware())
+	{
+		users.GET("profile", handlers.GetProfile)
+		users.POST("aboutme", handlers.UpdateAboutMe)
+	}
 }
 
 func (r *Router) Run(addr string) error {
-    return r.engine.Run(addr)
+	return r.engine.Run(addr)
 }
-    */
