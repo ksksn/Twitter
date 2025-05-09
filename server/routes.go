@@ -18,7 +18,6 @@ func NewRouter() *Router {
 }
 
 func (r *Router) SetupRoutes() {
-	// Публичные маршруты для аутентификации
 	auth := r.engine.Group("api/v1/auth")
 	{
 		auth.POST("register", handlers.Register)
@@ -35,7 +34,6 @@ func (r *Router) SetupRoutes() {
 		notes.DELETE("delete", handlers.DeleteNote)
 	}
 
-	// Защищенные маршруты для пользователей
 	users := r.engine.Group("api/v1/users")
 	users.Use(middleware.AuthMiddleware())
 	{
@@ -47,3 +45,4 @@ func (r *Router) SetupRoutes() {
 func (r *Router) Run(addr string) error {
 	return r.engine.Run(addr)
 }
+

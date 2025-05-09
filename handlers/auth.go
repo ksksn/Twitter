@@ -93,8 +93,7 @@ func GetProfile(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
 		return
 	}
-
-	// Возвращаем данные пользователя (исключая пароль)
+	
 	c.JSON(http.StatusOK, gin.H{
 		"id":       foundUser.ID,
 		"username": foundUser.Username,
@@ -102,16 +101,12 @@ func GetProfile(c *gin.Context) {
 	})
 }
 
-// UpdateAboutMe обновляет информацию "обо мне" для аутентифицированного пользователя
 func UpdateAboutMe(c *gin.Context) {
-	// Получаем ID пользователя из контекста
 	userID, exists := c.Get("userID")
 	if !exists {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "not authenticated"})
 		return
 	}
-
-	// Структура для входных данных
 	var input struct {
 		AboutMe string `json:"about_me" binding:"required"`
 	}
