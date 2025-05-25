@@ -1,43 +1,72 @@
 package handlers
 
 import (
+	"fmt"
+	"log"
+	_ "math/rand/v2"
 	"net/http"
-	"github.com/gin-gonic/gin"
-	"golang.org/x/crypto/bcrypt"
+	"twitter/db"
 	"twitter/models"
 	"twitter/utils"
+
+	"github.com/gin-gonic/gin"
+	"golang.org/x/crypto/bcrypt"
 )
 
-var users = make(map[string]models.User)
-var userCounter uint = 1
 func Register(c *gin.Context) {
-	var input models.RegisterInput
+	var req models.User
 
-	if err := c.ShouldBindJSON(&input); err != nil {
+	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	if _, exists := users[input.Username]; exists {
+	req.ID = 0
+
+	if req.Username == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "username is required"})
+		return
+	}
+
+	if req.Password == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "password is required"})
+		return
+	}
+
+	exists, err := db.UserExists(req.Username)
+	if err != nil {
+		log.Printf("Error checking if user exists: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "database error"})
+		return
+	}
+
+	if exists {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "username already exists"})
 		return
 	}
 
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.DefaultCost)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {
+		log.Printf("Error hashing password: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to hash password"})
 		return
 	}
-	user := models.User{
-		ID:       userCounter,
-		Username: input.Username,
-		Password: string(hashedPassword),
+
+	req.Password = string(hashedPassword)
+
+	userID, err := db.CreateUser(&req)
+	if err != nil {
+		log.Printf("Error creating user: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("failed to create user: %v", err)})
+		return
 	}
 
-	users[input.Username] = user
-	userCounter++
-
-	c.JSON(http.StatusCreated, gin.H{"message": "user registered successfully"})
+	c.JSON(http.StatusCreated, gin.H{
+		"message":  "user registered successfully",
+		"user_id":  userID,
+		"username": req.Username,
+		
+	})
 }
 
 func Login(c *gin.Context) {
@@ -47,13 +76,14 @@ func Login(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	user, exists := users[input.Username]
-	if !exists {
+
+	user, err := db.GetUserByUsername(input.Username)
+	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid credentials"})
 		return
 	}
 
-	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(input.Password))
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(input.Password))
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid credentials"})
 		return
@@ -68,63 +98,4 @@ func Login(c *gin.Context) {
 	c.JSON(http.StatusOK, models.TokenResponse{
 		AccessToken: token,
 	})
-}
-
-
-func GetProfile(c *gin.Context) {
-	userID, exists := c.Get("userID")
-	if !exists {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "not authenticated"})
-		return
-	}
-
-	var foundUser models.User
-	found := false
-
-	for _, user := range users {
-		if user.ID == userID.(uint) {
-			foundUser = user
-			found = true
-			break
-		}
-	}
-
-	if !found {
-		c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
-		return
-	}
-	
-	c.JSON(http.StatusOK, gin.H{
-		"id":       foundUser.ID,
-		"username": foundUser.Username,
-		"about_me": foundUser.AboutMe,
-	})
-}
-
-func UpdateAboutMe(c *gin.Context) {
-	userID, exists := c.Get("userID")
-	if !exists {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "not authenticated"})
-		return
-	}
-	var input struct {
-		AboutMe string `json:"about_me" binding:"required"`
-	}
-
-	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	// Обновляем информацию пользователя
-	for username, user := range users {
-		if user.ID == userID.(uint) {
-			user.AboutMe = input.AboutMe
-			users[username] = user
-			c.JSON(http.StatusOK, gin.H{"message": "about me updated successfully"})
-			return
-		}
-	}
-
-	c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
 }

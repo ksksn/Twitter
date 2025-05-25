@@ -1,0 +1,265 @@
+body, html {
+    height: 100vh;
+    width: 100vw;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #7cafbb;
+    font-family: Arial, sans-serif;
+    color: white;
+    overflow: hidden;
+}
+
+.twitter-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    gap: 10px; 
+}
+
+i {
+    font-size: 3em;
+    color: white;
+    transition: all 1.5s ease-in-out;
+    transform-origin: center; 
+}
+
+h1 {
+    font-size: 3em;
+    margin: 0;
+    transition: opacity 0.5s ease;
+}
+
+.expand {
+    position: fixed;
+    color: white;
+    background-color: white;
+    width: 150vmax;
+    height: 150vmax;
+    border-radius: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    transition: transform 1.5s ease-in-out;
+}
+
+.expand.active {
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.white-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: white;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    pointer-events: none;
+    z-index: 9999;
+}
+
+.white-screen.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.login-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 300px;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.5s ease, visibility 0.5s;
+}
+
+.login-container.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.login-button {
+    padding: 12px 20px;
+    border-radius: 25px;
+    border: 1px solid #e6e6e6;
+    background: white;
+    color: #333;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: background-color 0.3s;
+}
+
+.login-button:hover {
+    background-color: #f5f5f5;
+}
+
+.login-button.apple {
+    background-color: #ffffff;
+    color: #333;
+    border: 1px solid #e6e6e6;
+}
+
+.login-button.apple:hover {
+    background-color: #f5f5f5;
+}
+
+.login-button.apple i {
+    color: #333;
+    font-size: 20px;
+}
+
+.login-button.google {
+    background-color: #ffffff;
+    color: #333;
+    border: 1px solid #e6e6e6;
+}
+
+.login-button.google:hover {
+    background-color: #f5f5f5;
+}
+
+.login-button.google i {
+    color: #4285f4;
+    font-size: 20px;
+}
+
+.login-button.github {
+    background-color: #ffffff;
+    color: #333;
+    border: 1px solid #e6e6e6;
+}
+
+.login-button.github:hover {
+    background-color: #f5f5f5;
+}
+
+.login-button.github i {
+    color: #333;
+    font-size: 20px;
+}
+
+.login-button i {
+    font-size: 20px;
+    color: #333;
+}
+
+.email-container {
+    margin-top: 10px;
+}
+
+.email-input {
+    width: 100%;
+    padding: 12px 20px;
+    border-radius: 25px;
+    border: 1px solid #e6e6e6;
+    font-size: 16px;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.email-input:focus {
+    border-color: #1DA1F2;
+}
+
+.register-link {
+    color: #536471;
+    text-decoration: none;
+    font-size: 14px;
+    text-align: center;
+    margin-top: 10px;
+}
+
+.register-link:hover {
+    text-decoration: underline;
+}
+
+.register-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 300px;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.5s ease;
+}
+
+.register-container.visible {
+    opacity: 1;
+    visibility: visible;
+    top: 45%; /* изменено с 50% на 45% */
+}
+
+.register-title {
+    color: #333;
+    font-size: 31px;
+    font-weight: 700;
+    text-align: center;
+    margin: 0 0 20px 0;
+    transform: scale(0.8);
+    transition: all 0.5s ease;
+}
+
+.register-container.visible .register-title {
+    transform: scale(1);
+}
+
+.login-container.hidden {
+    opacity: 0;
+    visibility: hidden;
+    transform: translate(-50%, -30%);
+}
+
+.next-button {
+    background-color: #67a9d2;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 25px;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 10px;
+    transition: background-color 0.3s;
+}
+
+.next-button:hover {
+    background-color: #1a91da;
+}
+
+.login-hint {
+    margin-top: 15px;
+    text-align: center;
+    color: #536471;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+.text-button {
+    background: none;
+    border: none;
+    color: #1DA1F2;
+    font-size: 14px;
+    cursor: pointer;
+    padding: 0;
+}
+
+.text-button:hover {
+    text-decoration: underline;
+}

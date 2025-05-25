@@ -24,7 +24,6 @@ func (r *Router) SetupRoutes() {
 		auth.POST("login", handlers.Login)
 	}
 
-	// Защищенные маршруты для заметок
 	notes := r.engine.Group("api/v1/notes")
 	notes.Use(middleware.AuthMiddleware())
 	{
@@ -37,8 +36,7 @@ func (r *Router) SetupRoutes() {
 	users := r.engine.Group("api/v1/users")
 	users.Use(middleware.AuthMiddleware())
 	{
-		users.GET("profile", handlers.GetProfile)
-		users.POST("aboutme", handlers.UpdateAboutMe)
+		//users.GET("profile", handlers.GetProfile)
 	}
 }
 
