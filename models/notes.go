@@ -1,9 +1,10 @@
 package models
 
 type Note struct {
-	ID   int `json:"id"`
-	Text string `json:"text" binding:"required"`
-	//IsLiked bool   `json:"is_liked"`
+	ID       int    `json:"id"`
+	Text     string `json:"text" binding:"required"`
+	IsActive bool   `json:"is_active"`
+	UserID   uint   `json:"user_id"`
 }
 
 type User struct {
@@ -19,4 +20,10 @@ type LoginInput struct {
 
 type TokenResponse struct {
 	AccessToken string `json:"access_token"`
+}
+
+type Like struct {
+	ID     int  `json:"id"`
+	UserID uint `json:"user_id"`
+	NoteID int  `json:"note_id"`
 }

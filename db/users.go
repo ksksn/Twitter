@@ -29,14 +29,12 @@ func CreateUser(user *models.User) (uint, error) {
 
 	log.Printf("Создание пользователя с именем: %s", user.Username)
 
-	
 	query := `INSERT INTO users (username, password) VALUES (?, ?)`
 
 	result, err := DB.Exec(query, user.Username, user.Password)
 	if err != nil {
 		return 0, fmt.Errorf("database error on insert: %w", err)
 	}
-
 
 	lastID, err := result.LastInsertId()
 	if err != nil {
@@ -58,4 +56,16 @@ func UserExists(username string) (bool, error) {
 	}
 
 	return exists, nil
+}
+
+func GetUserByID(userID uint) (*models.User, error) {
+	var user models.User
+
+	query := `SELECT id, username, password FROM users WHERE id = ?`
+	err := DB.QueryRow(query, userID).Scan(&user.ID, &user.Username, &user.Password)
+	if err != nil {
+		return nil, err
+	}
+
+	return &user, nil
 }
